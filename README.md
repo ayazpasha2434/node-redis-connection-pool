@@ -1,18 +1,19 @@
-node-redis-connection-pool
-==========================
+redis-connection-pool
+=====================
 
 A node.js connection pool for Redis.
 
+https://silverbucket.github.io/redis-connection-pool
+
 [![Build Status](http://img.shields.io/travis/silverbucket/node-redis-connection-pool.svg?style=flat)](http://travis-ci.org/silverbucket/node-redis-connection-pool)
-[![Code Climate](http://img.shields.io/codeclimate/github/silverbucket/node-redis-connection-pool.svg?style=flat)](https://codeclimate.com/github/silverbucket/node-redis-connection-pool)
 [![license](https://img.shields.io/npm/l/redis-connection-pool.svg?style=flat)](https://npmjs.org/package/redis-connection-pool)
 [![downloads](http://img.shields.io/npm/dm/redis-connection-pool.svg?style=flat)](https://npmjs.org/package/redis-connection-pool)
 
 ## About
-  node-redis-connection-pool is a high-level redis management object. It manages
+
+  A high-level redis connection pooling object. It manages
 a number of connections in a pool, using them as needed and keeping all aspects
-of releasing active connections internal to the object, so the user does not
-need to worry about forgotten connections leaking resources.
+of releasing active connections internal to the object.
 
 ## Installation
 
@@ -23,89 +24,60 @@ npm install redis-connection-pool
 ## Usage
 
 ```javascript
-var redisPool = require('redis-connection-pool')('myRedisPool', {
-    host: '127.0.0.1', // default
-    port: 6379, //default
-    max_clients: 30, // defalut
-    perform_checks: false, // checks for needed push/pop functionality
-    database: 0, // database number to use
-    options: {
-      auth_pass: 'password'
-    } //options for createClient of node-redis, optional
+import redisPoolFactory from 'redis-connection-pool';
+const redisPool = await redisPoolFactory('myRedisPool', {
+    max_clients: 5, // default
+    redis: {
+      url: 'redis://localhost:6379'
+    }
   });
 
-redisPool.set('test-key', 'foobar', function (err) {
-  redisPool.get('test-key', function (err, reply) {
-    console.log(reply); // 'foobar'
-  });
-});
+
+await redisPool.set('test-key', 'foobar');
+const foo = await redisPool.get('test-key');
+// returns 'foobar'
 ```
 
-## Implemented methods
-
-  * **get**
+Or you can create a pool instance directly
 ```javascript
-get(key, cb)
+import RedisConnectionPool from 'redis-connection-pool';
+const redisPool = new RedisConnectionPool();
+await redisPool.init();
 ```
 
-  * **set**
+When you are done
 ```javascript
-set(key, value, callback)
+redisPool.shutdown();
 ```
 
-  * **expire**
-```javascript
-expire(key, value, callback)
-```
+## Implemented Redis methods
 
-  * **del**
-```javascript
-del(key, callback)
-```
+* **blpop**
+* **brpop**
+* **del**
+* **expire**
+* **get**
+* **hdel**
+* **hget**
+* **hgetall**
+* **hset**
+* **incr**
+* **keys**
+* **lpush**
+* **rpush**
+* **sendCommand**
+* **set**
+* **ttl**
 
-  * **hget**
-```javascript
-hget(key, field, callback)
-```
+## Additional methods
 
-  * **hgetall**
-```javascript
-hgetall(key, callback)
-```
-
-  * **hset**
-```javascript
-hset(key, field, value, callback)
-```
-
-  * **brpop**
-```javascript
-brpop(key, cb)
-```
-
-  * **blpop**
-```javascript
-blpop(key, cb)
-```
-
-  * **rpush**
-```javascript
-rpush(key, value, callback)
-```
-
-  * **lpush**
-```javascript
-lpush(key, value, callback)
-```
+* **init**
+* **shutdown**
 
 
 ## API Documentation
-node-redis-connection-pool uses NaturalDocs to generate API documentation, which can be viewed after cloning the repository, in the doc/ directory, using a web browser.
-
+For the full documentation on the `RedisConnectionPool` class, see https://silverbucket.github.io/redis-connection-pool/classes/RedisConnectionPool.html
 
 ## License
 
 [MIT](https://github.com/silverbucket/node-redis-connection-pool/blob/master/LICENSE)
-
-
-
